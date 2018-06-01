@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Configuration;
 using System.Windows;
 
 namespace WPF
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         public App()
@@ -20,10 +12,11 @@ namespace WPF
 
         private void ReadCredentials()
         {
-            var cognitiveHelper = CognitiveHelper.Instance;
-            cognitiveHelper.Key = ConfigurationManager.AppSettings["ComputerVisionKey"];
-            cognitiveHelper.UriBase = ConfigurationManager.AppSettings["ComputerVisionUri"];
-
+            var credentialsHelper = CredentialsHelper.Instance;
+            credentialsHelper.Key = 
+                ConfigurationManager.AppSettings["ComputerVisionKey"];
+            credentialsHelper.Uri = 
+                ConfigurationManager.AppSettings["ComputerVisionUri"];
         }
     }
 }

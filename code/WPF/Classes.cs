@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace WPF
 {
-    public class CognitiveResult
+    public class OCRResult
     {
         public string TextAngle { get; set; }
         public string Orientation { get; set; }
@@ -29,9 +25,7 @@ namespace WPF
     {
         public string BoundingBox { get; set; }
         public string Text { get; set; }
-
         public int Left { get; set; }
-
         public int Top { get; set; }
     }
 }

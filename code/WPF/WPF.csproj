@@ -67,13 +67,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes.cs" />
-    <Compile Include="CognitiveHelper.cs" />
+    <Compile Include="CredentialsHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConversionHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

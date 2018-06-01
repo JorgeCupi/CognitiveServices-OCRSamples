@@ -34,7 +34,7 @@
         <StackPanel Grid.Row="1">
             <TextBlock Text="Image URL:"/>
             <TextBox Name="txtbImageUrl" Width="Auto"/>
-            <Button Name="btnUpload" Content="Scan image"/>
+            <Button Content="Scan image" Click="BtnUpload_Click"/>
             <TextBox Width="Auto" Name="txtbResult"
                      Height="Auto" TextWrapping="Wrap"/>
         </StackPanel>
