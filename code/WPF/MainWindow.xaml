@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -21,24 +20,29 @@
                    FontSize="36"/>
 
         <StackPanel Grid.Column="1"  Grid.ColumnSpan="2" Orientation="Horizontal">
-            <StackPanel Width="40" VerticalAlignment="Center">
-                <TextBlock Text="Uri"/>
-                <TextBlock Text="Key"/>
-            </StackPanel>
-            <StackPanel Width="360" VerticalAlignment="Center">
-                <TextBox Name="txtbUri"/>
-                <TextBox Name="txtbKey"/>
+            <StackPanel Width="400" VerticalAlignment="Center">
+                <TextBlock Text="Image URL:" FontSize="16"/>
+                <TextBox Name="txtbImageUrl" Width="Auto" FontSize="16"
+                         TextChanged="txtbImageUrl_TextChanged"/>
             </StackPanel>
         </StackPanel>
 
         <StackPanel Grid.Row="1">
-            <TextBlock Text="Image URL:"/>
-            <TextBox Name="txtbImageUrl" Width="Auto"/>
-            <Button Content="Scan image" Click="BtnUpload_Click"/>
+            <TextBlock Text="Raw result:" FontSize="16"/>
+            <TextBox Width="Auto" Name="txtbRawResult"
+                     Height="Auto" TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <TextBlock Text="Result divided by lines:"
+                       FontSize="16"/>
             <TextBox Width="Auto" Name="txtbResult"
                      Height="Auto" TextWrapping="Wrap"/>
         </StackPanel>
-        <Image Name="imgImage" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"
+
+        <Canvas Grid.Column="2" Grid.Row="1" Height="Auto" Width="Auto" Name="canvas">
+            <Image Name="imgImage"
                Source="{Binding ElementName=txtbImageUrl, Path=Text}" Height="Auto" Width="Auto"/>
+        </Canvas>
     </Grid>
 </Window>
+    

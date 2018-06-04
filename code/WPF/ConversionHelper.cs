@@ -10,7 +10,11 @@ namespace WPF
         {
             string finalResult = String.Empty;
             foreach (var region in regions)
+            {
+                finalResult += "----------\nNew region\n----------\n";
                 finalResult += ConstructStringFromLines(region.Lines);
+                
+            }
 
             return finalResult;
         }
