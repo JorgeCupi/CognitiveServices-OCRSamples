@@ -21,12 +21,18 @@ Once you create a Computer Vision service, just grab the URL and Key from the po
 ```
 
 Note that the URL in the portal will look like this:
-<i>https://[yourAzureRegion].api.cognitive.microsoft.com/vision/v1.0</i>
+
+```console
+https://[yourAzureRegion].api.cognitive.microsoft.com/vision/v1.0
+```
 
 We'll need to also add some parameters before pasting it to the config file. We'll add a language parameter set to unknown and a true flag for the service to detect the orientation of the image:
 
-<i> /ocr?language=unk%26detectOrientation=true </i>
-
+```console
+/ocr?language=unk%26detectOrientation=true
+```
 So, the final URL on the <b>App.config</b> file should look like this:
 
-<i>https://[yourAzureRegion].api.cognitive.microsoft.com/vision/v1.0/ocr?language=unk%26detectOrientation=true</i>
+```console
+https://[yourAzureRegion].api.cognitive.microsoft.com/vision/v1.0/ocr?language=unk%26detectOrientation=true
+```
