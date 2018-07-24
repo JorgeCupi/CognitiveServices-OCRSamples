@@ -27,25 +27,30 @@
             </StackPanel>
         </StackPanel>
 
-        <Grid Grid.Row="1" >
+        <Grid Grid.Row="1">
             <Canvas Name="canvas">
                 <Image Name="imgImage" Stretch="Uniform" 
-                   Source="{Binding ElementName=txtbImageUrl, Path=Text}"/>
+                    Source="{Binding ElementName=txtbImageUrl, Path=Text}"/>
             </Canvas>
         </Grid>
-        
-        
-        <StackPanel Grid.Row="1" Grid.Column="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
+            <StackPanel Grid.Row="1" Grid.Column="1">
             <TextBlock Text="Raw result:" FontSize="16"/>
-            <TextBox Width="Auto" Name="txtbRawResult"
-                     Height="Auto" TextWrapping="Wrap"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="2">
-            <TextBlock Text="Result divided by lines:"
+
+                <TextBox Width="Auto" Name="txtbRawResult"
+                     Height="Auto" TextWrapping="Wrap"
+                         MinWidth="200" MinHeight="350"/>
+            </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="2">
+            <StackPanel Grid.Row="1" Grid.Column="2">
+                <TextBlock Text="Result divided by lines:"
                        FontSize="16"/>
-            <TextBox Width="Auto" Name="txtbResult"
-                     Height="Auto" TextWrapping="Wrap"/>
-        </StackPanel>
+                <TextBox Name="txtbResult" TextWrapping="Wrap"
+                         MinWidth="200" MinHeight="350"
+                         Width="Auto" Height="Auto"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
     
