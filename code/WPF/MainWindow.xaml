@@ -21,12 +21,9 @@
 
         <StackPanel Grid.Column="1"  Grid.ColumnSpan="2" Orientation="Horizontal">
             <StackPanel Width="400" VerticalAlignment="Center">
-                <TextBlock Text="Image URL:" FontSize="16"/>
+                <TextBlock Text="Image URL or filepath:" FontSize="16"/>
                 <TextBox Name="txtbImageUrl" Width="Auto" FontSize="16"
                          TextChanged="txtbImageUrl_TextChanged"/>
-                <TextBlock Text="OR" FontSize="16"/>
-                <Button Click="btnUpload" Content="Upload a file"/>
-                <TextBox Name="txtUpload" Width="Auto" FontSize="16"/>
             </StackPanel>
         </StackPanel>
 
