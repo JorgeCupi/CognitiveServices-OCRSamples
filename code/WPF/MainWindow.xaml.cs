@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Windows;
@@ -79,6 +80,42 @@ namespace WPF
                 txtbResult.Text = linesFromOCR;
             }
             catch(Exception ex)
+            {
+                txtbRawResult.Text = ex.ToString();
+            }
+        }
+
+        private async void btnUpload(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                while (canvas.Children.Count > 1)
+                    canvas.Children.RemoveAt(canvas.Children.Count - 1);
+
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Add(
+                    "Ocp-Apim-Subscription-Key", credentials.Key);
+
+                FileStream fileStream = File.OpenRead(txtUpload.Text);
+                var content = new StreamContent(fileStream);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+                
+
+                var httpResult = await client.PostAsync(credentials.Uri, content);
+                string result = await httpResult.Content.ReadAsStringAsync();
+                var ocrResult = JsonConvert.DeserializeObject<OCRResult>(result);
+
+
+                string rawResult = ConversionHelper.GetResultOrderedByRegions(ocrResult.Regions);
+                string linesFromOCR =
+                    ConversionHelper.GetResultOrderedByLines(ocrResult.Regions);
+
+                DrawRegionsOverImage(ocrResult.Regions);
+                txtbRawResult.Text = rawResult;
+                txtbResult.Text = linesFromOCR;
+            }
+
+            catch (Exception ex)
             {
                 txtbRawResult.Text = ex.ToString();
             }
