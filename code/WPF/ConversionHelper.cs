@@ -7,13 +7,14 @@ namespace WPF
     static class ConversionHelper
     {
         internal static string GetResultOrderedByRegions(List<Region> regions)
-        {
+        {   
+            int regionCount = 1;
             string finalResult = String.Empty;
             foreach (var region in regions)
             {
-                finalResult += "----------\nNew region\n----------\n";
+                finalResult += $"----------\nNew region {regionCount}\n----------\n";
                 finalResult += ConstructStringFromLines(region.Lines);
-                
+                regionCount++;
             }
 
             return finalResult;

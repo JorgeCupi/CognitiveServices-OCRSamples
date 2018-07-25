@@ -28,6 +28,7 @@ namespace WPF
 
         private void DrawRegionsOverImage(List<Region> regions)
         {
+            int regionCounter = 1;
             string[] separators = new string[] { "," };
             foreach (var region in regions)
             {
@@ -42,12 +43,23 @@ namespace WPF
                 Rectangle rect = new Rectangle();
                 rect.Width = width;
                 rect.Height = height;
-                rect.Stroke = new SolidColorBrush(Colors.Black);
+                rect.Stroke = new SolidColorBrush(Colors.Red);
+                
+                TextBlock textRegion = new TextBlock();
+                textRegion.Margin = new Thickness(left, top, 0, 0);
+                textRegion.VerticalAlignment = VerticalAlignment.Top;
+                textRegion.HorizontalAlignment = HorizontalAlignment.Left;
+                textRegion.Text = regionCounter.ToString();
+                textRegion.FontSize = 16;
+                textRegion.Foreground = new SolidColorBrush(Colors.Red);
 
-                Canvas.SetLeft(rect, left);
-                Canvas.SetTop(rect, top);
+                rect.HorizontalAlignment = HorizontalAlignment.Left;
+                rect.VerticalAlignment = VerticalAlignment.Top;
+                rect.Margin = new Thickness(left, top, 0, 0);
 
-                canvas.Children.Add(rect);
+                grid.Children.Add(textRegion);
+                grid.Children.Add(rect);
+                regionCounter++;
             }
         }
 
@@ -55,8 +67,8 @@ namespace WPF
         {
             try
             {
-                while (canvas.Children.Count > 1)
-                    canvas.Children.RemoveAt(canvas.Children.Count - 1);
+                while (grid.Children.Count > 1)
+                    grid.Children.RemoveAt(grid.Children.Count - 1);
 
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.Add(
