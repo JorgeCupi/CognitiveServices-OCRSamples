@@ -54,7 +54,6 @@
                     Source="{Binding ElementName=txtbImageUrl, Path=Text}"/>
             </Grid>
         </ScrollViewer>
-        
     </Grid>
 </Window>
     
