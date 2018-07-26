@@ -42,6 +42,8 @@ namespace WPF
                 DrawRegionsOverImage(ocrResult.Regions);
                 txtbRawResult.Text = rawResult;
                 txtbResult.Text = linesFromOCR;
+
+                WriteToTxtFile(txtbResult.Text, txtbImageUrl.Text);
             }
             catch (Exception ex)
             {
@@ -49,6 +51,12 @@ namespace WPF
                 mainGrid.Visibility = Visibility.Visible;
                 messageGrid.Visibility = Visibility.Hidden;
             }
+        }
+
+        private void WriteToTxtFile(string text, string fileName)
+        {
+            string filePath = fileName.Replace(".tif", "Azure.txt");
+            File.WriteAllText(filePath, text);
         }
 
         private async Task<OCRResult> GetOcrResult()
@@ -60,7 +68,7 @@ namespace WPF
             client.DefaultRequestHeaders.Add(
                 "Ocp-Apim-Subscription-Key", credentials.Key);
 
-            var fileStream = File.OpenRead(txtbImageUrl.Text);
+            var fileStream = File.OpenRead(txtbImageUrl.Text+".png");
             var content = new StreamContent(fileStream);
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
 
@@ -73,8 +81,8 @@ namespace WPF
         private void ConvertTifToPng()
         {
             var converter = new TiffToPngConverter();
+
             converter.Convert(txtbImageUrl.Text);
-            string fileName = txtbImageUrl.Text.Replace("tif", "png");
 
             mainGrid.Visibility = Visibility.Visible;
             messageGrid.Visibility = Visibility.Hidden;

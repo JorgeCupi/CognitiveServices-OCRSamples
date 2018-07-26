@@ -86,7 +86,7 @@ namespace WPF
 					Console.WriteLine("   - Se ignora página en blanco.");
 				}
 			}
-			png.Save(targetFolder + Path.GetFileName(tifFile) + ".png", ImageFormat.Png);
+			png.Save(tifFile + ".png", ImageFormat.Png);
 		}
 
 		/// <summary>

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF", "WPF\WPF.csproj", "{D42CD739-1422-4890-8A36-1968ADF8C056}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TIF-Version", "TIF-Version\TIF-Version.csproj", "{94AC4ABA-6D58-436C-B46F-EB3F3C48C022}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D42CD739-1422-4890-8A36-1968ADF8C056}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D42CD739-1422-4890-8A36-1968ADF8C056}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D42CD739-1422-4890-8A36-1968ADF8C056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94AC4ABA-6D58-436C-B46F-EB3F3C48C022}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94AC4ABA-6D58-436C-B46F-EB3F3C48C022}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94AC4ABA-6D58-436C-B46F-EB3F3C48C022}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94AC4ABA-6D58-436C-B46F-EB3F3C48C022}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
