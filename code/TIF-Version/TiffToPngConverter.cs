@@ -6,9 +6,19 @@ using System.IO;
 
 namespace WPF
 {
+	/// <summary>
+	/// Convierte un archivo TIFF en un conjunto de PNG.
+	/// Genera un archivo por cada MaxFilePages páginas
+	/// Reduce la resolución del archivo.
+	/// Puede quitar píxeles superiores e inferiores de cada página (desactivado)
+	/// Puede ignorar las páginas en blanco (desactivado por ser muy lento)
+	/// </summary>
 	public class TiffToPngConverter
 	{
+		private static int MaxFilePages = 8;
+
 		/// <summary>
+		/// DEPRECTATED.
 		/// Convierte todos los archivos TIFF encontrados en la estructura de carpetas indicada y
 		/// los convierte a archivos PNG
 		/// </summary>
@@ -26,13 +36,14 @@ namespace WPF
 		}
 
         /// <summary>
+		/// NO SE USA.
 		/// Convierte el archivo TIFF que se encuentra en el pathFile a un archivo PNG
 		/// </summary>
 		/// <param name="sourceFolderName">La carpeta raíz a buscar</param>
-		public void Convert(string filePath)
+		public List<string> Convert(string filePath)
         {
             string dirName = new DirectoryInfo(filePath).Name;
-            ConvertTifToPng(filePath, dirName);
+            return ConvertTifToPng(filePath, dirName);
         }
 
         /// <summary>
@@ -51,7 +62,7 @@ namespace WPF
 				}
 				foreach (string d in Directory.GetDirectories(sourceFolderName))
 				{
-					files.AddRange(GetTifFiles(d));
+					files.AddRange(GetTifFiles(d)); 
 				}
 			}
 			catch (System.Exception e) { }
@@ -60,33 +71,41 @@ namespace WPF
 		}
 
 		/// <summary>
-		/// Convierte un archivo TIFF en un PNG
+		/// Convierte un archivo TIFF en uno o varios PNG. Cada PNG tiene un máximo de MaxFilePages folios.
 		/// </summary>
 		/// <param name="tifFile">El archivo a convertir</param>
 		/// <param name="targetFolder">La carpeta de destino</param>
-		private static void ConvertTifToPng(string tifFile, string targetFolder)
+		/// <returns>La lista de los archivos png generados</returns>
+		private static List<string> ConvertTifToPng(string tifFile, string targetFolder)
 		{
 			System.IO.Directory.CreateDirectory(targetFolder);
 
-			Image png = CropImage(Image.FromFile(tifFile));
+			Image png = Image.FromFile(tifFile);
 
+			List<string> pngFiles = new List<string>();
+			string pngFileName;
 			Image tif = Image.FromFile(tifFile);
 			int pages = tif.GetFrameCount(FrameDimension.Page);
 
-			for (int p = 1; p < pages; p++)
+			for (int fileNumber = 0; fileNumber <= Math.Ceiling(new Decimal(pages / MaxFilePages)); fileNumber++)
 			{
-				Console.WriteLine("   Página " + p.ToString());
-				tif.SelectActiveFrame(FrameDimension.Page, p);
-				if (!IsBlank(tif))
+				Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (fileNumber * MaxFilePages + 1).ToString());
+				tif.SelectActiveFrame(FrameDimension.Page, fileNumber * MaxFilePages);
+				png = (Image) tif.Clone();
+
+				for (int p = 1; p < Math.Min(pages - (fileNumber * MaxFilePages), MaxFilePages); p++)
 				{
-					png = MergeTwoImages(png, CropImage(tif));
+					int CurrentPage = MaxFilePages * fileNumber + p;
+					Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (CurrentPage + 1).ToString());
+					tif.SelectActiveFrame(FrameDimension.Page, CurrentPage);
+					png = MergeTwoImages(png, tif);
 				}
-				else
-				{
-					Console.WriteLine("   - Se ignora página en blanco.");
-				}
+				pngFileName = tifFile + "_file" + (fileNumber + 1).ToString() + ".png";
+				png.Save(pngFileName, ImageFormat.Png);
+				pngFiles.Add(pngFileName);
+				Console.WriteLine("Saving file: " + pngFileName);
 			}
-			png.Save(tifFile + ".png", ImageFormat.Png);
+			return pngFiles;
 		}
 
 		/// <summary>
@@ -114,6 +133,7 @@ namespace WPF
 		}
 
 		/// <summary>
+		/// NO SE ESTÁ USANDO. Ver si aplica para todos los tif o sólo para algunos templates.
 		/// Quita 150 píxeles de arriba y de abajo de la página..
 		/// </summary>
 		/// <param name="srcImage">La imagen a recortar.</param>
@@ -126,6 +146,7 @@ namespace WPF
 		}
 
 		/// <summary>
+		/// DEPRECTATED. El método es efectivo pero tarda mucho. No se está usando.
 		/// Evalúa si la página está en blanco
 		/// </summary>
 		/// <param name="srcImage">La imagen a evaluar.</param>
@@ -133,7 +154,7 @@ namespace WPF
 		private static bool IsBlank(Image srcImage)
 		{
 			double stdDev = GetStdDev(new Bitmap(srcImage));
-			return stdDev < 1500000;
+			return stdDev < 1300000;
 		}
 
 		/// <summary>
