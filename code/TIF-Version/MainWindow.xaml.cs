@@ -27,22 +27,35 @@ namespace WPF
             credentials.Uri = credentials.Uri.Replace("%26", "&");
         }
 
+		/// <summary>
+		/// Toma el archivo Tiff seleccionado, convierte a 1 o múltiples png e invoca al OCR
+		/// Pega el texto final en los controles del formulario
+		/// (Esto último habría que llevarlo a un file directamente).
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private async void btnSelectFile_Click(object sender, RoutedEventArgs e)
         {
+			List<string> pngFiles;
             OpenTifFile();
+			pngFiles = ConvertTifToPng();
 
-            try
+			try
             {
-                ConvertTifToPng();
-                OCRResult ocrResult = await GetOcrResult();
+				for (int p = 0; p < pngFiles.Count; p++)
+				{
+					OCRResult ocrResult = await GetOcrResult(pngFiles[p]);
+					if (ocrResult.Regions.Count > 0)
+					{
+						string rawResult = ConversionHelper.GetResultOrderedByRegions(ocrResult.Regions);
+						string linesFromOCR = ConversionHelper.GetResultOrderedByLines(ocrResult.Regions);
 
-                string rawResult = ConversionHelper.GetResultOrderedByRegions(ocrResult.Regions);
-                string linesFromOCR = ConversionHelper.GetResultOrderedByLines(ocrResult.Regions);
-
-                DrawRegionsOverImage(ocrResult.Regions);
-                txtbRawResult.Text = rawResult;
-                txtbResult.Text = linesFromOCR;
-
+						// No se necesita
+						//DrawRegionsOverImage(ocrResult.Regions); 
+						txtbRawResult.Text += rawResult;
+						txtbResult.Text += linesFromOCR;
+					}
+				}
                 WriteToTxtFile(txtbResult.Text, txtbImageUrl.Text);
             }
             catch (Exception ex)
@@ -59,7 +72,7 @@ namespace WPF
             File.WriteAllText(filePath, text);
         }
 
-        private async Task<OCRResult> GetOcrResult()
+        private async Task<OCRResult> GetOcrResult(string pngFile)
         {
             while (grid.Children.Count > 1)
                 grid.Children.RemoveAt(grid.Children.Count - 1);
@@ -68,7 +81,7 @@ namespace WPF
             client.DefaultRequestHeaders.Add(
                 "Ocp-Apim-Subscription-Key", credentials.Key);
 
-            var fileStream = File.OpenRead(txtbImageUrl.Text+".png");
+            var fileStream = File.OpenRead(pngFile);
             var content = new StreamContent(fileStream);
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
 
@@ -78,15 +91,18 @@ namespace WPF
             return ocrResult;
         }
 
-        private void ConvertTifToPng()
+        private List<string> ConvertTifToPng()
         {
+			List<string> pngFiles;
             var converter = new TiffToPngConverter();
 
-            converter.Convert(txtbImageUrl.Text);
+			pngFiles = converter.Convert(txtbImageUrl.Text);
 
             mainGrid.Visibility = Visibility.Visible;
             messageGrid.Visibility = Visibility.Hidden;
-        }
+			return pngFiles;
+
+		}
 
         private void OpenTifFile()
         {
@@ -103,14 +119,13 @@ namespace WPF
                     txtbImageUrl.Text = file;
                     break;
                 case System.Windows.Forms.DialogResult.Cancel:
-                    txtbImageUrl.Text = "No se selecciono ningun archivo";
+                    txtbImageUrl.Text = "No se seleccionó ningún archivo";
                     break;
                 default:
-                    txtbImageUrl.Text = "No se selecciono ningun archivo";
+                    txtbImageUrl.Text = "No se seleccionó ningún archivo";
                     break;
             }
         }
-
         private void DrawRegionsOverImage(List<Region> regions)
         {
             int regionCounter = 1;
