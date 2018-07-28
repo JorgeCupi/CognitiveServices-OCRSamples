@@ -36,9 +36,9 @@ namespace WPF
 		/// <param name="e"></param>
         private async void btnSelectFile_Click(object sender, RoutedEventArgs e)
         {
-			List<string> pngFiles;
-            OpenTifFile();
-			pngFiles = ConvertTifToPng();
+            string filePath = OpenTifFile();
+            txtbImageUrl.Text = filePath;
+			List<string> pngFiles = ConvertTifToPng(filePath);
 
 			try
             {
@@ -50,26 +50,20 @@ namespace WPF
 						string rawResult = ConversionHelper.GetResultOrderedByRegions(ocrResult.Regions);
 						string linesFromOCR = ConversionHelper.GetResultOrderedByLines(ocrResult.Regions);
 
-						// No se necesita
-						//DrawRegionsOverImage(ocrResult.Regions); 
+						DrawRegionsOverImage(ocrResult.Regions); 
 						txtbRawResult.Text += rawResult;
 						txtbResult.Text += linesFromOCR;
 					}
 				}
                 WriteToTxtFile(txtbResult.Text, txtbImageUrl.Text);
             }
+
             catch (Exception ex)
             {
                 txtbRawResult.Text = ex.ToString();
                 mainGrid.Visibility = Visibility.Visible;
                 messageGrid.Visibility = Visibility.Hidden;
             }
-        }
-
-        private void WriteToTxtFile(string text, string fileName)
-        {
-            string filePath = fileName.Replace(".tif", "Azure.txt");
-            File.WriteAllText(filePath, text);
         }
 
         private async Task<OCRResult> GetOcrResult(string pngFile)
@@ -90,21 +84,13 @@ namespace WPF
             var ocrResult = JsonConvert.DeserializeObject<OCRResult>(result);
             return ocrResult;
         }
-
-        private List<string> ConvertTifToPng()
+        private void WriteToTxtFile(string text, string fileName)
         {
-			List<string> pngFiles;
-            var converter = new TiffToPngConverter();
+            string filePath = fileName.Replace(".tif", "Azure.txt");
+            File.WriteAllText(filePath, text);
+        }
 
-			pngFiles = converter.Convert(txtbImageUrl.Text);
-
-            mainGrid.Visibility = Visibility.Visible;
-            messageGrid.Visibility = Visibility.Hidden;
-			return pngFiles;
-
-		}
-
-        private void OpenTifFile()
+        private string OpenTifFile()
         {
             mainGrid.Visibility = Visibility.Hidden;
             messageGrid.Visibility = Visibility.Visible;
@@ -116,16 +102,25 @@ namespace WPF
             {
                 case System.Windows.Forms.DialogResult.OK:
                     var file = fileDialog.FileName;
-                    txtbImageUrl.Text = file;
-                    break;
-                case System.Windows.Forms.DialogResult.Cancel:
-                    txtbImageUrl.Text = "No se seleccionó ningún archivo";
-                    break;
+                    return file;
                 default:
-                    txtbImageUrl.Text = "No se seleccionó ningún archivo";
-                    break;
+                    return "No se selecciono ningun archivo";
             }
         }
+
+        private List<string> ConvertTifToPng(string filePath)
+        {
+            var converter = new TiffToPngConverter();
+
+            List<string> pngFiles = converter.ConvertTiffToPngFiles(filePath);
+            txtbImageUrl.Text = pngFiles[0];
+
+            mainGrid.Visibility = Visibility.Visible;
+            messageGrid.Visibility = Visibility.Hidden;
+
+			return pngFiles;
+		}
+
         private void DrawRegionsOverImage(List<Region> regions)
         {
             int regionCounter = 1;

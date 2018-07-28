@@ -55,8 +55,7 @@
 
             <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" MinHeight="300" MinWidth="300">
                 <Grid Name="grid">
-                    <Image Name="imgImage"
-                    Source="{Binding ElementName=txtbImageUrl, Path=Text}"/>
+                    <Image Name="imgImage" Source="{Binding ElementName=txtbImageUrl, Path=Text}"/>
                 </Grid>
             </ScrollViewer>
 

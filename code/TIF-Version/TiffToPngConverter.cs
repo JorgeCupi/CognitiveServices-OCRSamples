@@ -15,98 +15,41 @@ namespace WPF
 	/// </summary>
 	public class TiffToPngConverter
 	{
-		private static int MaxFilePages = 8;
-
-		/// <summary>
-		/// DEPRECTATED.
-		/// Convierte todos los archivos TIFF encontrados en la estructura de carpetas indicada y
-		/// los convierte a archivos PNG
-		/// </summary>
-		/// <param name="sourceFolderName">La carpeta raíz a buscar</param>
-		/// <param name="targetFolderName">La carpeta destino donde se guardarán los PNG</param>
-		public void Convert(string sourceFolderName, string targetFolderName)
-		{
-			List<String> files = GetTifFiles(sourceFolderName);
-
-			for (int f = 0; f < files.Count; f++)
-			{
-				Console.WriteLine(files[f]);
-				ConvertTifToPng(files[f], targetFolderName);
-			}
-		}
+		private static int MaxFilePages = 16;
 
         /// <summary>
-		/// NO SE USA.
-		/// Convierte el archivo TIFF que se encuentra en el pathFile a un archivo PNG
+		/// Convierte el archivo TIFF que se encuentra en el pathFile a uno o mas archivos PNG dependiendo a su tamaño.
 		/// </summary>
 		/// <param name="sourceFolderName">La carpeta raíz a buscar</param>
-		public List<string> Convert(string filePath)
+		public List<string> ConvertTiffToPngFiles(string filePath)
         {
-            string dirName = new DirectoryInfo(filePath).Name;
-            return ConvertTifToPng(filePath, dirName);
+            Image png = Image.FromFile(filePath);
+
+            List<string> pngFiles = new List<string>();
+            string pngFileName;
+            Image tif = Image.FromFile(filePath);
+            int pages = tif.GetFrameCount(FrameDimension.Page);
+            int maxPages = int.Parse(Math.Ceiling(new Decimal(pages / MaxFilePages)).ToString());
+            for (int fileNumber = 0; fileNumber <= maxPages; fileNumber++)
+            {
+                Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (fileNumber * MaxFilePages + 1).ToString());
+                tif.SelectActiveFrame(FrameDimension.Page, fileNumber * MaxFilePages);
+                png = (Image)tif.Clone();
+
+                for (int p = 1; p < Math.Min(pages - (fileNumber * MaxFilePages), MaxFilePages); p++)
+                {
+                    int CurrentPage = MaxFilePages * fileNumber + p;
+                    Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (CurrentPage + 1).ToString());
+                    tif.SelectActiveFrame(FrameDimension.Page, CurrentPage);
+                    png = MergeTwoImages(png, tif);
+                }
+                pngFileName = filePath + "_file" + (fileNumber + 1).ToString() + ".png";
+                png.Save(pngFileName, ImageFormat.Png);
+                pngFiles.Add(pngFileName);
+                Console.WriteLine("Saving file: " + pngFileName);
+            }
+            return pngFiles;
         }
-
-        /// <summary>
-        /// Consigue todos los archivos TIFF en un a carpeta y sus subcarpetas
-        /// </summary>
-        /// <param name="sourceFolderName">La carpeta raíz a buscar</param>
-        /// <returns>Una lista de archivos y su full path</returns>
-        private static List<string> GetTifFiles(string sourceFolderName)
-		{
-			List<String> files = new List<String>();
-			try
-			{
-				foreach (string f in Directory.GetFiles(sourceFolderName, "*.tif"))
-				{
-					files.Add(f);
-				}
-				foreach (string d in Directory.GetDirectories(sourceFolderName))
-				{
-					files.AddRange(GetTifFiles(d)); 
-				}
-			}
-			catch (System.Exception e) { }
-
-			return files;
-		}
-
-		/// <summary>
-		/// Convierte un archivo TIFF en uno o varios PNG. Cada PNG tiene un máximo de MaxFilePages folios.
-		/// </summary>
-		/// <param name="tifFile">El archivo a convertir</param>
-		/// <param name="targetFolder">La carpeta de destino</param>
-		/// <returns>La lista de los archivos png generados</returns>
-		private static List<string> ConvertTifToPng(string tifFile, string targetFolder)
-		{
-			System.IO.Directory.CreateDirectory(targetFolder);
-
-			Image png = Image.FromFile(tifFile);
-
-			List<string> pngFiles = new List<string>();
-			string pngFileName;
-			Image tif = Image.FromFile(tifFile);
-			int pages = tif.GetFrameCount(FrameDimension.Page);
-
-			for (int fileNumber = 0; fileNumber <= Math.Ceiling(new Decimal(pages / MaxFilePages)); fileNumber++)
-			{
-				Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (fileNumber * MaxFilePages + 1).ToString());
-				tif.SelectActiveFrame(FrameDimension.Page, fileNumber * MaxFilePages);
-				png = (Image) tif.Clone();
-
-				for (int p = 1; p < Math.Min(pages - (fileNumber * MaxFilePages), MaxFilePages); p++)
-				{
-					int CurrentPage = MaxFilePages * fileNumber + p;
-					Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (CurrentPage + 1).ToString());
-					tif.SelectActiveFrame(FrameDimension.Page, CurrentPage);
-					png = MergeTwoImages(png, tif);
-				}
-				pngFileName = tifFile + "_file" + (fileNumber + 1).ToString() + ".png";
-				png.Save(pngFileName, ImageFormat.Png);
-				pngFiles.Add(pngFileName);
-				Console.WriteLine("Saving file: " + pngFileName);
-			}
-			return pngFiles;
-		}
 
 		/// <summary>
 		/// Añade una imagen debajo de otra.
