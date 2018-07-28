@@ -86,7 +86,7 @@ namespace WPF
         }
         private void WriteToTxtFile(string text, string fileName)
         {
-            string filePath = fileName.Replace(".tif", "Azure.txt");
+            string filePath = fileName.Replace(".png", ".txt");
             File.WriteAllText(filePath, text);
         }
 

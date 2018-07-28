@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 
 namespace WPF
 {
@@ -26,27 +25,31 @@ namespace WPF
             Image png = Image.FromFile(filePath);
 
             List<string> pngFiles = new List<string>();
-            string pngFileName;
             Image tif = Image.FromFile(filePath);
+            filePath = filePath.Replace(".tif","");
+
             int pages = tif.GetFrameCount(FrameDimension.Page);
-            int maxPages = int.Parse(Math.Ceiling(new Decimal(pages / MaxFilePages)).ToString());
+            int maxPages = Decimal.ToInt32(Math.Ceiling(new Decimal(pages / MaxFilePages)));
+
             for (int fileNumber = 0; fileNumber <= maxPages; fileNumber++)
             {
-                Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (fileNumber * MaxFilePages + 1).ToString());
+                Console.WriteLine($"File:{fileNumber + 1}- Page:{fileNumber * MaxFilePages + 1}");
                 tif.SelectActiveFrame(FrameDimension.Page, fileNumber * MaxFilePages);
                 png = (Image)tif.Clone();
 
-                for (int p = 1; p < Math.Min(pages - (fileNumber * MaxFilePages), MaxFilePages); p++)
+                int minPages = Math.Min(pages - (fileNumber * MaxFilePages), MaxFilePages);
+                for (int p = 1; p < minPages; p++)
                 {
                     int CurrentPage = MaxFilePages * fileNumber + p;
-                    Console.WriteLine("File: " + (fileNumber + 1).ToString() + " - Page: " + (CurrentPage + 1).ToString());
+                    Console.WriteLine($"File:{fileNumber + 1}- Page:{CurrentPage + 1}");
                     tif.SelectActiveFrame(FrameDimension.Page, CurrentPage);
                     png = MergeTwoImages(png, tif);
                 }
-                pngFileName = filePath + "_file" + (fileNumber + 1).ToString() + ".png";
+
+                string pngFileName = $"{filePath}_file{fileNumber + 1}-Azure.png";
                 png.Save(pngFileName, ImageFormat.Png);
                 pngFiles.Add(pngFileName);
-                Console.WriteLine("Saving file: " + pngFileName);
+                Console.WriteLine($"Saving file:{pngFileName}");
             }
             return pngFiles;
         }
@@ -62,7 +65,7 @@ namespace WPF
 			int outputImageWidth = firstImage.Width > secondImage.Width ? firstImage.Width : secondImage.Width;
 			int outputImageHeight = firstImage.Height + secondImage.Height + 1;
 
-			Bitmap outputImage = new Bitmap(outputImageWidth, outputImageHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			Bitmap outputImage = new Bitmap(outputImageWidth, outputImageHeight, PixelFormat.Format32bppArgb);
 
 			using (Graphics graphics = Graphics.FromImage(outputImage))
 			{
